@@ -17,8 +17,8 @@ public class Auth extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final String JDBC_DRIVER = "org.postgresql.Driver";
     private static final String DB_URL = "jdbc:postgresql://localhost:5432/postgres";
-    private static final String USER = "postgres";
-    private static final String PASS = "mediaweb";
+    private static final String USER = "";
+    private static final String PASS = "";
 
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response)
