@@ -4,13 +4,11 @@ import javax.servlet.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 
-@WebServlet (urlPatterns = "/seulement-on-init",
+@WebServlet (urlPatterns = "/login",
 		loadOnStartup = 1
 )
 
 public class LoadOnInitServlet extends HttpServlet {
-
-
 
     /**
 	 * 
@@ -20,7 +18,8 @@ public class LoadOnInitServlet extends HttpServlet {
 	@Override
 	public void init(ServletConfig arg0) throws ServletException {
 		super.init(arg0);
-		System.out.println("****************************************************XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+
+		System.out.println("****************************************************************XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 	}
 
 }

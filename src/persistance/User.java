@@ -6,7 +6,8 @@ public class User implements Utilisateur {
 
     private boolean isBibliothecaire;
 
-    public User(boolean isBibliothecaire) {
+    public User(    boolean isBibliothecaire) {
+
         this.isBibliothecaire = isBibliothecaire;
     }
 
@@ -14,4 +15,5 @@ public class User implements Utilisateur {
     public boolean isBibliothecaire() {
         return isBibliothecaire;
     }
+
 }

@@ -10,7 +10,6 @@ import mediatheque.*;
 
 public class MediathequeData implements PersistentMediatheque {
 // Jean-Fran�ois Brette 01/01/2018
-	private static final long serialVersionUID = 1L;
 	private static final String JDBC_DRIVER = "org.postgresql.Driver";
 	private static final String DB_URL = "jdbc:postgresql://localhost:5432/postgres";
 	private static final String USER = "postgres";
@@ -21,6 +20,7 @@ public class MediathequeData implements PersistentMediatheque {
 
 	static {
 		try {
+			System.out.println("static block");
 			Mediatheque.getInstance().setData(new MediathequeData());
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
@@ -42,7 +42,7 @@ public class MediathequeData implements PersistentMediatheque {
 	// si pas trouv�, renvoie null
 	@Override
 	public Utilisateur getUser(String login, String password) {
-		String statement = "select isbibliothecaire from auth where login=? and passwd=?";
+		String statement = "select login, isbibliothecaire from auth where login=? and passwd=?";
 		Utilisateur user = null;
 		try {
 			PreparedStatement preparedStatement = connection.prepareStatement(statement);
