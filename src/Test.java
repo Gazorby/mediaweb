@@ -39,7 +39,7 @@ public class Test extends HttpServlet {
     }
 
     private String testMethod(String login, String password) {
-        String statement = "select isbibliothecaire from auth where login=? and passwd=?";
+        String statement = "select isbibliothecaire from "user" where login=? and passwd=?";
         Utilisateur user = null;
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(statement);

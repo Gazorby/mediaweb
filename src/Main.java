@@ -10,7 +10,7 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            String statement = "insert into auth (login, passwd) values ('matthieu', '1234')";
+            String statement = "insert into "user" (login, passwd) values ('matthieu', '1234')";
             Connection connection = null;
             Class.forName("org.postgresql.Driver");
             connection = DriverManager.getConnection(DB_URL, USER, PASS);

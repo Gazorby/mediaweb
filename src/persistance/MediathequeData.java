@@ -42,7 +42,7 @@ public class MediathequeData implements PersistentMediatheque {
 	// si pas trouv�, renvoie null
 	@Override
 	public Utilisateur getUser(String login, String password) {
-		String statement = "select login, isbibliothecaire from auth where login=? and passwd=?";
+		String statement = "select login, isbibliothecaire from "user" where login=? and passwd=?";
 		Utilisateur user = null;
 		try {
 			PreparedStatement preparedStatement = connection.prepareStatement(statement);

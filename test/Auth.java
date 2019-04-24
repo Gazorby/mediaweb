@@ -29,7 +29,7 @@ public class Auth extends HttpServlet {
         PrintWriter out = response.getWriter();
         try {
             out.println(password);
-            String statement = "insert into auth (login, passwd) values (?, ?)";
+            String statement = "insert into "user" (login, passwd) values (?, ?)";
             Connection connection = null;
             Class.forName(JDBC_DRIVER);
             connection = DriverManager.getConnection(DB_URL, USER, PASS);

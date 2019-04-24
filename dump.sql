@@ -36,54 +36,49 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: auth; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.auth (
-    login character varying(255) NOT NULL,
-    passwd character varying(255) NOT NULL,
-    isbibliothecaire boolean NOT NULL
-);
-
-
-ALTER TABLE public.auth OWNER TO postgres;
-
---
 -- Name: document; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.document (
     name character varying NOT NULL,
     type character varying NOT NULL,
-    id integer NOT NULL
+    id integer NOT NULL,
+    "user" character varying(255)
 );
 
 
 ALTER TABLE public.document OWNER TO postgres;
 
 --
--- Data for Name: auth; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Name: user; Type: TABLE; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.auth VALUES ('jean', '1234', true);
-INSERT INTO public.auth VALUES ('matthieu', '6542', false);
-INSERT INTO public.auth VALUES ('xavier', '6521', true);
+CREATE TABLE public."user" (
+    login character varying(255) NOT NULL,
+    passwd character varying(255) NOT NULL,
+    isbibliothecaire boolean NOT NULL
+);
 
+
+ALTER TABLE public."user" OWNER TO postgres;
 
 --
 -- Data for Name: document; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.document VALUES ('Le chant du loup', 'dvd', 12);
-INSERT INTO public.document VALUES ('Harry Potter et le coupe de feu', 'livre', 1354);
-INSERT INTO public.document VALUES ('Thriller', 'CD', 32);
 
 
 --
--- Name: auth auth_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Data for Name: user; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.auth
+
+
+--
+-- Name: user auth_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."user"
     ADD CONSTRAINT auth_pk PRIMARY KEY (login);
 
 
@@ -93,6 +88,14 @@ ALTER TABLE ONLY public.auth
 
 ALTER TABLE ONLY public.document
     ADD CONSTRAINT table_name_pk PRIMARY KEY (id);
+
+
+--
+-- Name: document user___fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.document
+    ADD CONSTRAINT user___fk FOREIGN KEY ("user") REFERENCES public."user"(login) ON UPDATE CASCADE ON DELETE SET NULL;
 
 
 --
