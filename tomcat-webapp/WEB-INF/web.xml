@@ -33,11 +33,30 @@
       <servlet-name>Auth</servlet-name>
       <servlet-class>service.Auth</servlet-class>
         <load-on-startup>1</load-on-startup>
-      <!-- <servlet-class>Test</servlet-class> -->
+    </servlet>
+
+    <servlet>
+      <servlet-name>Emprunter</servlet-name>
+      <servlet-class>service.Emprunter</servlet-class>
+    </servlet>
+
+    <servlet>
+      <servlet-name>Retourner</servlet-name>
+      <servlet-class>service.Retourner</servlet-class>
     </servlet>
 
     <servlet-mapping>
         <servlet-name>Auth</servlet-name>
         <url-pattern>/login</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>Emprunter</servlet-name>
+        <url-pattern>/emprunter</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>Retourner</servlet-name>
+        <url-pattern>/retourner</url-pattern>
     </servlet-mapping>
 </web-app>

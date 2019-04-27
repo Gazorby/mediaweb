@@ -1,9 +1,12 @@
 package persistance;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import mediatheque.*;
+import persistance.Document.DocumentFactory;
+import persistance.Document.Type;
 
 // classe mono-instance  dont l'unique instance n'est connue que de la bibliotheque
 // via une auto-d�claration dans son bloc static
@@ -12,8 +15,8 @@ public class MediathequeData implements PersistentMediatheque {
 // Jean-Fran�ois Brette 01/01/2018
 	private static final String JDBC_DRIVER = "org.postgresql.Driver";
 	private static final String DB_URL = "jdbc:postgresql://localhost:5432/postgres";
-	private static final String USER = "postgres";
-	private static final String PASS = "";
+	private static final String USER = "DEVERDUX";
+	private static final String PASS = "DEVERDUX";
 
 	private Connection connection = null;
 
@@ -42,18 +45,33 @@ public class MediathequeData implements PersistentMediatheque {
 	// si pas trouv�, renvoie null
 	@Override
 	public Utilisateur getUser(String login, String password) {
-		String statement = "select login, isbibliothecaire from "user" where login=? and passwd=?";
 		Utilisateur user = null;
+		List<Integer> borrowedDocs = new ArrayList<>();
+		String userQuery = "select login, passwd, isbibliothecaire from public.subscriber where login=? and passwd=?;";
+
 		try {
-			PreparedStatement preparedStatement = connection.prepareStatement(statement);
-			preparedStatement.setString(1, login);
-			preparedStatement.setString(2, password);
-			ResultSet res = preparedStatement.executeQuery();
-			while (res.next()) {
-				user = new User(res.getBoolean("isbibliothecaire"));
+			PreparedStatement preparedStatementUser = connection.prepareStatement(userQuery);
+			preparedStatementUser.setString(1, login);
+			preparedStatementUser.setString(2, password);
+			ResultSet resUser = preparedStatementUser.executeQuery();
+
+			if (resUser.next()) {
+				if (! resUser.getBoolean("isbibliothecaire")) {
+					String docsQuery = "select doc.id from public.document as doc where doc.subscriber=?;";
+					PreparedStatement preparedStatementDoc = connection.prepareStatement(docsQuery);
+					preparedStatementDoc.setString(1, login);
+					ResultSet resDocs = preparedStatementDoc.executeQuery();
+
+					while (resDocs.next()) {
+						borrowedDocs.add(resDocs.getInt("id"));
+					}
+				}
+				user = new User(resUser.getString("login"),
+								resUser.getBoolean("isbibliothecaire"),
+								borrowedDocs);
 			}
 		} catch (SQLException e) {
-			System.out.println(e.toString());
+			e.printStackTrace();
 		}
 		return user;
 	}
@@ -63,7 +81,23 @@ public class MediathequeData implements PersistentMediatheque {
 	// si pas trouv�, renvoie null
 	@Override
 	public Document getDocument(int numDocument) {
-		return null;
+	    Document doc = null;
+        String query = "select id, name, type from public.document where id=?";
+        try {
+			PreparedStatement  preparedStatementUser = connection.prepareStatement(query);
+            preparedStatementUser.setInt(1, numDocument);
+            ResultSet res = preparedStatementUser.executeQuery();
+
+			if (res.next()) {
+				DocumentFactory factory = new DocumentFactory();
+                doc = factory.getDocument(res.getString("name"),
+										  Type.valueOf(res.getString("type").toUpperCase()));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        System.out.println(doc);
+        return doc;
 	}
 
 	@Override

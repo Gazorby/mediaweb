@@ -1,8 +1,10 @@
 package service;
 
+import mediatheque.Document;
 import mediatheque.Mediatheque;
 import mediatheque.Utilisateur;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -11,6 +13,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Read requests params and
@@ -32,30 +38,57 @@ public class Auth extends HttpServlet {
         }
     }
 
-    protected void doGet(HttpServletRequest request,
-                         HttpServletResponse response)
-            throws IOException {
+    protected void doPost(HttpServletRequest request,
+                          HttpServletResponse response)
+            throws IOException, ServletException {
 
         HttpSession session = request.getSession();
+        PrintWriter out = response.getWriter();
 
         // Get singleton instance of mediatheque
         Mediatheque mediatheque = Mediatheque.getInstance();
-        PrintWriter out = response.getWriter();
 
-        // Get params from request
-        // TODO : use post method
+        // Get params from the post request
         String login = request.getParameter("login");
         String password = request.getParameter("password");
 
         // Get user from mediatheque
         Utilisateur user = mediatheque.getUser(login, password);
+        RequestDispatcher view;
 
         if (user == null) {
-            out.println("Incorrect login or password");
+            view = request.getRequestDispatcher("html/error-login.html");
+            view.forward(request, response);
+            return;
         }
-        else
+        else if (! user.isBibliothecaire())
         {
-            out.println("Good ! Your are connected :)");
+            view = request.getRequestDispatcher("html/abonne.jsp");
+            String borrowedDocsString = user.toString();
+
+            if (borrowedDocsString == null) {
+                request.setAttribute("docsEmpruntes", "Vous n'avez pas de document empruntés");
+            }
+            else {
+                List<Document> docs = new ArrayList<>();
+                // Convert string borrowedDocsString to int array (docs id)
+                int[] borrowedDocs = Arrays.stream(borrowedDocsString.split(", ")).mapToInt(Integer::parseInt).toArray();
+
+                for (int id : borrowedDocs) {
+                    docs.add(mediatheque.getDocument(id));
+                }
+                request.setAttribute("docs", docs);
+            }
         }
+
+        else {
+            view = request.getRequestDispatcher("html/bibliothecaire.jsp");
+        }
+
+        request.setAttribute("welcome", "Bonjour " + login + " !");
+        view.forward(request, response);
+
     }
+
+
 }
