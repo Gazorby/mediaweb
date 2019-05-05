@@ -14,11 +14,11 @@ import persistance.Document.Type;
 public class MediathequeData implements PersistentMediatheque {
 // Jean-Fran�ois Brette 01/01/2018
 	private static final String JDBC_DRIVER = "org.postgresql.Driver";
-	private static final String DB_URL = "jdbc:postgresql://localhost:5432/postgres";
+	private static final String DB_URL = "jdbc:postgresql://localhost:5432/mediaweb";
 	private static final String USER = "DEVERDUX";
 	private static final String PASS = "DEVERDUX";
 
-	private Connection connection = null;
+	private Connection connection;
 
 
 	static {
