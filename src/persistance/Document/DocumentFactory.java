@@ -12,48 +12,51 @@ public class DocumentFactory {
      * @param type, type of the document
      * @return Return a document with given name and type
      */
-    public Document getDocument(String name, @NotNull Type type) {
+    public Document getDocument(String name, @NotNull Type type, int id) {
         switch (type) {
             case CD:
-                return getCd(name);
+                return getCd(name, id);
             case DVD:
-                return getDvd(name);
+                return getDvd(name, id);
             default:
-                return getLivre(name);
+                return getLivre(name, id);
         }
     }
 
     /**
      * DVD getter
      * @param name, name of the DVD
+     * @param id
      * @return, a DVD object with the corresponding name
      */
     @NotNull
-    @Contract("_ -> new")
-    private Document getDvd(String name) {
-        return new Dvd(name);
+    @Contract("_, _ -> new")
+    private Document getDvd(String name, int id) {
+        return new Dvd(name,id);
     }
 
     /**
      * CD getter
      * @param name, name of the CD
+     * @param id
      * @return, a CD object with the corresponding name
      */
     @NotNull
-    @Contract("_ -> new")
-    private Document getCd(String name) {
-        return new Cd(name);
+    @Contract("_, _ -> new")
+    private Document getCd(String name, int id) {
+        return new Cd(name,id);
     }
 
     /**
      * Livre getter
      * @param name, name of the Livre
+     * @param id
      * @return, a Livre object with the corresponding name
      */
     @NotNull
-    @Contract("_ -> new")
-    private Document getLivre(String name) {
-        return new Livre(name);
+    @Contract("_, _ -> new")
+    private Document getLivre(String name, int id) {
+        return new Livre(name,id);
     }
 
 }

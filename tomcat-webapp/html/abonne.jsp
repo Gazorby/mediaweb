@@ -26,13 +26,19 @@
         <h3>Vos documents emprunt&eacutes</h3>
         <% List<Document> docs = (List<Document>) request.getAttribute("docs"); %>
 
-        <%for (Document doc : docs) {%>
+         <form action = "retourner" method = "post">
+         <%for (Document doc : docs) {%>
             <br>
             <tr>
-                <input type="checkbox" name="doc">
-                <td><%=doc.affiche()[0]%></td>
+                <input type="checkbox" value = '<%=doc.affiche()[2]%>'  name="doc">
+                <td><%=doc.affiche()[0]%> (<b><%=doc.affiche()[1]%></b>)</td>
             </tr>
         <%}%>
+        <br><br>
+        <input type="submit" name="retourner" value="retourner">
+        <% String returned = (request.getAttribute("returned") == null ? "" : (String) request.getAttribute("returned")); %>
+        <h2><%=returned%></h2>
+    	</form>
     </section>
 
 </body>

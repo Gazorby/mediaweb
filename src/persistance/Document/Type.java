@@ -15,14 +15,4 @@ public enum Type {
     public String toString() {
         return name;
     }
-
-    public static Type toType(String t) {
-        if (t.equals("dvd"))
-            return DVD;
-        else if (t.equals("cd"))
-            return CD;
-        else if (t.equals("livre"))
-            return LIVRE;
-        return null;
-    }
 }

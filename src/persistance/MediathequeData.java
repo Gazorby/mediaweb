@@ -8,7 +8,6 @@ import mediatheque.*;
 import persistance.Document.DocumentFactory;
 import persistance.Document.Type;
 
-import static persistance.Document.Type.toType;
 
 // classe mono-instance  dont l'unique instance n'est connue que de la bibliotheque
 // via une auto-d�claration dans son bloc static
@@ -47,7 +46,7 @@ public class MediathequeData implements PersistentMediatheque {
 			ResultSet resList = preparedStatementList.executeQuery();
 			if (resList.next()) {
 				while (resList.next()) {
-					listDoc.add(facD.getDocument(resList.getString("name"), toType(resList.getString("type"))));
+					listDoc.add(facD.getDocument(resList.getString("name"), Type.valueOf(resList.getString("type").toUpperCase()), resList.getInt("id")));
 				}
 			}
 		} catch (SQLException e) {
@@ -106,7 +105,7 @@ public class MediathequeData implements PersistentMediatheque {
 			if (res.next()) {
 				DocumentFactory factory = new DocumentFactory();
                 doc = factory.getDocument(res.getString("name"),
-										  Type.valueOf(res.getString("type").toUpperCase()));
+										  Type.valueOf(res.getString("type").toUpperCase()), res.getInt("id"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -142,5 +141,4 @@ public class MediathequeData implements PersistentMediatheque {
 			e.printStackTrace();
 		}
 	}
-
 }
