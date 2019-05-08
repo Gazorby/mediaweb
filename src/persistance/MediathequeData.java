@@ -25,7 +25,6 @@ public class MediathequeData implements PersistentMediatheque {
 
 	static {
 		try {
-			System.out.println("static block");
 			Mediatheque.getInstance().setData(new MediathequeData());
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
@@ -118,7 +117,6 @@ public class MediathequeData implements PersistentMediatheque {
 
 	@Override
 	public void nouveauDocument(int type, Object... args) {
-		Document doc = null;
 		String newDocQuery = "insert into public.document(id,name,type,subscriber) values (nextval('document_seq'),?,?,null)";
 		System.out.println(args[0].toString());
 		try {
@@ -137,12 +135,8 @@ public class MediathequeData implements PersistentMediatheque {
 					preparedStatementDoc.setString(2,"livre");
 					break;
 			}
-			int i = preparedStatementDoc.executeUpdate();
-			System.out.println(i);
-			if (i >0 )
-				System.out.println("Insert ok\n");
-			else
-				System.out.println("Error \n");
+			preparedStatementDoc.executeUpdate();
+
 		}
 		catch (SQLException e) {
 			e.printStackTrace();

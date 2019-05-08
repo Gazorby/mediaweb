@@ -45,6 +45,11 @@
       <servlet-class>service.Retourner</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>Ajouter</servlet-name>
+        <servlet-class>service.Ajouter</servlet-class>
+    </servlet>
+
     <servlet-mapping>
         <servlet-name>Auth</servlet-name>
         <url-pattern>/login</url-pattern>
@@ -58,5 +63,10 @@
     <servlet-mapping>
         <servlet-name>Retourner</servlet-name>
         <url-pattern>/retourner</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>Ajouter</servlet-name>
+        <url-pattern>/ajouter</url-pattern>
     </servlet-mapping>
 </web-app>

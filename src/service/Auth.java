@@ -84,7 +84,7 @@ public class Auth extends HttpServlet {
             view = request.getRequestDispatcher("html/bibliothecaire.jsp");
         }
 
-        request.setAttribute("welcome", "Bonjour " + login + " !");
+        session.setAttribute("welcome", "Bonjour " + login + " !");
         view.forward(request, response);
 
     }

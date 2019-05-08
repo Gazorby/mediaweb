@@ -14,7 +14,7 @@
 
 <body>
     <section>
-        <h3><%=request.getAttribute("welcome")%></h3>
+        <h3><%=session.getAttribute("welcome")%></h3>
         
         
         <button href="emprunter">Emprunter</button>
@@ -26,12 +26,13 @@
         <h3>Vos documents emprunt&eacutes</h3>
         <% List<Document> docs = (List<Document>) request.getAttribute("docs"); %>
 
-        <% for (Document doc : docs) { %>
+        <%for (Document doc : docs) {%>
+            <br>
             <tr>
-                <input type="radio" name="">
+                <input type="checkbox" name="doc">
                 <td><%=doc.affiche()[0]%></td>
-            </tr >
-        <%} %>
+            </tr>
+        <%}%>
     </section>
 
 </body>
