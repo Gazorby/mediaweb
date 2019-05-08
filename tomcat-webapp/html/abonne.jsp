@@ -15,7 +15,11 @@
 <body>
     <section>
         <h3><%=request.getAttribute("welcome")%></h3>
+        
+        
         <button href="emprunter">Emprunter</button>
+
+
     </section>
 
     <section>
@@ -24,6 +28,7 @@
 
         <% for (Document doc : docs) { %>
             <tr>
+                <input type="radio" name="">
                 <td><%=doc.affiche()[0]%></td>
             </tr >
         <%} %>

@@ -8,6 +8,8 @@ import mediatheque.*;
 import persistance.Document.DocumentFactory;
 import persistance.Document.Type;
 
+import static persistance.Document.Type.toType;
+
 // classe mono-instance  dont l'unique instance n'est connue que de la bibliotheque
 // via une auto-d�claration dans son bloc static
 
@@ -38,7 +40,21 @@ public class MediathequeData implements PersistentMediatheque {
 	// renvoie la liste de tous les documents de la biblioth�que
 	@Override
 	public List<Document> tousLesDocuments() {
-		return null;
+		List<Document> listDoc = new ArrayList<Document>();
+		DocumentFactory facD = new DocumentFactory();
+		String listDocQuery = "select name from public.document";
+		try {
+			PreparedStatement preparedStatementList = connection.prepareStatement(listDocQuery);
+			ResultSet resList = preparedStatementList.executeQuery();
+			if (resList.next()) {
+				while (resList.next()) {
+					listDoc.add(facD.getDocument(resList.getString("name"), toType(resList.getString("type"))));
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return listDoc;
 	}
 
 	// va r�cup�rer le User dans la BD et le renvoie
@@ -82,9 +98,9 @@ public class MediathequeData implements PersistentMediatheque {
 	@Override
 	public Document getDocument(int numDocument) {
 	    Document doc = null;
-        String query = "select id, name, type from public.document where id=?";
+        String docQuery = "select id, name, type from public.document where id=?";
         try {
-			PreparedStatement  preparedStatementUser = connection.prepareStatement(query);
+			PreparedStatement  preparedStatementUser = connection.prepareStatement(docQuery);
             preparedStatementUser.setInt(1, numDocument);
             ResultSet res = preparedStatementUser.executeQuery();
 
@@ -102,9 +118,35 @@ public class MediathequeData implements PersistentMediatheque {
 
 	@Override
 	public void nouveauDocument(int type, Object... args) {
-		// args[0] -> le titre
-		// args [1] --> l'auteur
-		// etc...
+		Document doc = null;
+		String newDocQuery = "insert into public.document(id,name,type,subscriber) values (nextval('document_seq'),?,?,null)";
+		System.out.println(args[0].toString());
+		try {
+			PreparedStatement preparedStatementDoc = connection.prepareStatement(newDocQuery);
+			preparedStatementDoc.setString(1,args[0].toString());
+			switch (type) {
+				case 1:
+					preparedStatementDoc.setString(2,"dvd");
+					break;
+
+				case 2:
+					preparedStatementDoc.setString(2,"cd");
+					break;
+
+				case 3:
+					preparedStatementDoc.setString(2,"livre");
+					break;
+			}
+			int i = preparedStatementDoc.executeUpdate();
+			System.out.println(i);
+			if (i >0 )
+				System.out.println("Insert ok\n");
+			else
+				System.out.println("Error \n");
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
