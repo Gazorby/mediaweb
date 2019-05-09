@@ -6,10 +6,12 @@ public class User implements Utilisateur {
 
     private boolean isBibliothecaire;
     private List<Integer> docEmpruntes;
+    private String login;
 
     public User(String login, boolean isBibliothecaire, List<Integer> docEmpruntes) {
         this.isBibliothecaire = isBibliothecaire;
         this.docEmpruntes = docEmpruntes;
+        this.login = login;
     }
 
     /**
@@ -30,7 +32,8 @@ public class User implements Utilisateur {
     public String toString () {
         if (! isBibliothecaire && docEmpruntes != null) {
             // Remove brackets of the string representation of the array [.., .., ] => .., ..,
-            return docEmpruntes.toString().substring(1, docEmpruntes.toString().length() - 1);
+            String res = docEmpruntes.toString().substring(1, docEmpruntes.toString().length() - 1) + ", " + login;
+            return res;
         }
         else {
             return null;

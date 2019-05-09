@@ -21,13 +21,13 @@
         <h3>Enregistrer un nouveau document</h3>
         
         <form action="ajouter" method="post">
-        title:<input type="text" name="title">
-        author:<input type="text" name="author"> <br>
+            title:<input type="text" name="title">
+            author:<input type="text" name="author"> <br>
 
-     	<input type="radio" name="typeDoc" value = "CD"> CD <br>
-     	<input type="radio" name="typeDoc" value = "DVD"> DVD <br>
-     	<input type="radio" name="typeDoc" value = "Livre"> Livre <br><br>
-     	<input type="submit" value="submit" />
+            <input type="radio" name="typeDoc" value = "CD"> CD <br>
+            <input type="radio" name="typeDoc" value = "DVD"> DVD <br>
+            <input type="radio" name="typeDoc" value = "Livre"> Livre <br><br>
+            <input type="submit" value="submit" />
      	</form>
         <% String added = (request.getAttribute("added") == null ? "" : (String) request.getAttribute("added")); %>
         <h2><%=added%></h2>

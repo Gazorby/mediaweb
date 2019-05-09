@@ -1,6 +1,9 @@
 package service;
 
 import mediatheque.Mediatheque;
+import persistance.Document.ADocument;
+import persistance.Document.DocumentFactory;
+import persistance.Document.Type;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -18,19 +21,15 @@ public class Ajouter extends HttpServlet {
         ArrayList<String> documentDetails = new ArrayList<String>(2);
         String author = request.getParameter("author");
         String title = request.getParameter("title");
+
         documentDetails.add(author);
         documentDetails.add(title);
-        String typeS = request.getParameter("typeDoc");
-        int type;
-        if (typeS.equals("DVD"))
-            type = 1;
-        else if (typeS.equals("CD"))
-            type = 2;
-        else
-            type = 3;
+
+        DocumentFactory factory = new DocumentFactory();
+        ADocument aDocument = factory.getDocument(title, Type.valueOf(request.getParameter("typeDoc")), -1, null);
 
         Mediatheque mediatheque = Mediatheque.getInstance();
-        mediatheque.nouveauDocument(type, documentDetails);
+        mediatheque.nouveauDocument(aDocument.getId(), aDocument);
 
         request.setAttribute("added", "Document ajouté !");
 

@@ -1,6 +1,6 @@
 package persistance.Document;
 
-import mediatheque.Document;
+import mediatheque.Utilisateur;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,16 +10,17 @@ public class DocumentFactory {
      * Document getter
      * @param name, name of the document
      * @param type, type of the document
+     * @param user
      * @return Return a document with given name and type
      */
-    public Document getDocument(String name, @NotNull Type type, int id) {
+    public ADocument getDocument(String name, @NotNull Type type, int id, Utilisateur user) {
         switch (type) {
             case CD:
-                return getCd(name, id);
+                return getCd(name, id, user);
             case DVD:
-                return getDvd(name, id);
+                return getDvd(name, id, user);
             default:
-                return getLivre(name, id);
+                return getLivre(name, id, user);
         }
     }
 
@@ -27,11 +28,12 @@ public class DocumentFactory {
      * DVD getter
      * @param name, name of the DVD
      * @param id
+     * @param user
      * @return, a DVD object with the corresponding name
      */
     @NotNull
-    @Contract("_, _ -> new")
-    private Document getDvd(String name, int id) {
+    @Contract("_, _, _ -> new")
+    private ADocument getDvd(String name, int id, Utilisateur user) {
         return new Dvd(name,id);
     }
 
@@ -39,11 +41,12 @@ public class DocumentFactory {
      * CD getter
      * @param name, name of the CD
      * @param id
+     * @param user
      * @return, a CD object with the corresponding name
      */
     @NotNull
-    @Contract("_, _ -> new")
-    private Document getCd(String name, int id) {
+    @Contract("_, _, _ -> new")
+    private ADocument getCd(String name, int id, Utilisateur user) {
         return new Cd(name,id);
     }
 
@@ -51,11 +54,12 @@ public class DocumentFactory {
      * Livre getter
      * @param name, name of the Livre
      * @param id
+     * @param user
      * @return, a Livre object with the corresponding name
      */
     @NotNull
-    @Contract("_, _ -> new")
-    private Document getLivre(String name, int id) {
+    @Contract("_, _, _ -> new")
+    private ADocument getLivre(String name, int id, Utilisateur user) {
         return new Livre(name,id);
     }
 
