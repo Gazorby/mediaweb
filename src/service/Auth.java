@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -60,30 +61,36 @@ public class Auth extends HttpServlet {
             view.forward(request, response);
             return;
         }
+
         else if (! user.isBibliothecaire())
         {
             view = request.getRequestDispatcher("html/abonne.jsp");
-            String borrowedDocsString = user.toString();
 
-            if (borrowedDocsString == null) {
+            List<String> tmp = new LinkedList<>(Arrays.asList(user.toString().split(", ")));
+            tmp.remove(tmp.size() - 1);
+
+            if (tmp == null) {
                 request.setAttribute("docsEmpruntes", "Vous n'avez pas de document empruntés");
             }
             else {
                 List<Document> docs = new ArrayList<>();
-                // Convert string borrowedDocsString to int array (docs id)
-                int[] borrowedDocs = Arrays.stream(borrowedDocsString.split(", ")).mapToInt(Integer::parseInt).toArray();
 
-                for (int id : borrowedDocs) {
-                    docs.add(mediatheque.getDocument(id));
-                }
-                request.setAttribute("docs", docs);
+                  for (String s : tmp) {
+                      docs.add(mediatheque.getDocument(Integer.parseInt(s)));
+
+                  }
+
+                request.setAttribute("docsEmpruntes", docs);
             }
+
+            request.setAttribute("docsAvailable", mediatheque.tousLesDocuments());
         }
 
         else {
             view = request.getRequestDispatcher("html/bibliothecaire.jsp");
         }
 
+        session.setAttribute("user", user);
         session.setAttribute("welcome", "Bonjour " + login + " !");
         view.forward(request, response);
 

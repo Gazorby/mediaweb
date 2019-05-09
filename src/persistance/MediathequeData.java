@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mediatheque.*;
+import persistance.Document.ADocument;
 import persistance.Document.DocumentFactory;
 import persistance.Document.Type;
-
 
 // classe mono-instance  dont l'unique instance n'est connue que de la bibliotheque
 // via une auto-d�claration dans son bloc static
@@ -18,6 +18,7 @@ public class MediathequeData implements PersistentMediatheque {
 	private static final String DB_URL = "jdbc:postgresql://localhost:5432/mediaweb";
 	private static final String USER = "DEVERDUX";
 	private static final String PASS = "DEVERDUX";
+
 
 	private Connection connection;
 
@@ -37,17 +38,35 @@ public class MediathequeData implements PersistentMediatheque {
 
 	// renvoie la liste de tous les documents de la biblioth�que
 	@Override
-	public List<Document> tousLesDocuments() {
-		List<Document> listDoc = new ArrayList<Document>();
+	public List<Document> tousLesDocuments() 	{
+		List<Document> listDoc = new ArrayList<>();
 		DocumentFactory facD = new DocumentFactory();
-		String listDocQuery = "select name from public.document";
+		List<Integer> borrowedDocs = null;
+		String listDocQuery = "select name, type, id, subscriber from public.document";
+		String userQuery = "select u.login, u.isbibliothecaire, d.subscriber, d.id from subscriber as u, document as d where d.subscriber=?";
+
 		try {
 			PreparedStatement preparedStatementList = connection.prepareStatement(listDocQuery);
+			PreparedStatement preparedStatementUser = connection.prepareStatement(userQuery);
 			ResultSet resList = preparedStatementList.executeQuery();
-			if (resList.next()) {
-				while (resList.next()) {
-					listDoc.add(facD.getDocument(resList.getString("name"), Type.valueOf(resList.getString("type").toUpperCase()), resList.getInt("id")));
+
+			while (resList.next()) {
+
+				Utilisateur user = null;
+				preparedStatementUser.setString(1, resList.getString("subscriber"));
+				ResultSet resUser = preparedStatementUser.executeQuery();
+
+				if (resUser.next()) {
+					borrowedDocs = new ArrayList<>();
+					borrowedDocs.add(resUser.getInt("id"));
+					user = new User(resUser.getString("login"), false, borrowedDocs);
 				}
+
+				while (resUser.next()) {
+					borrowedDocs.add(resUser.getInt("id"));
+				}
+
+				listDoc.add(facD.getDocument(resList.getString("name"), Type.valueOf(resList.getString("type").toUpperCase()), resList.getInt("id"), user));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -96,16 +115,36 @@ public class MediathequeData implements PersistentMediatheque {
 	@Override
 	public Document getDocument(int numDocument) {
 	    Document doc = null;
-        String docQuery = "select id, name, type from public.document where id=?";
+		Utilisateur user = null;
+		List<Integer> borrowedDocs = null;
+		String docQuery = "select id, name, type, subscriber from public.document where id=?";
+        String userQuery = "select u.login, u.isbibliothecaire, d.subscriber, d.id from subscriber as u, document as d where u.login=?";
         try {
-			PreparedStatement  preparedStatementUser = connection.prepareStatement(docQuery);
-            preparedStatementUser.setInt(1, numDocument);
-            ResultSet res = preparedStatementUser.executeQuery();
+			PreparedStatement preparedStatementDoc = connection.prepareStatement(docQuery);
+			PreparedStatement preparedStatementUser = connection.prepareStatement(userQuery);
+            preparedStatementDoc.setInt(1, numDocument);
+            ResultSet resDoc = preparedStatementDoc.executeQuery();
 
-			if (res.next()) {
+			if (resDoc.next()) {
 				DocumentFactory factory = new DocumentFactory();
-                doc = factory.getDocument(res.getString("name"),
-										  Type.valueOf(res.getString("type").toUpperCase()), res.getInt("id"));
+				borrowedDocs = new ArrayList<>();
+				preparedStatementUser.setString(1, resDoc.getString("subscriber"));
+				ResultSet resUser = preparedStatementUser.executeQuery();
+
+				if (resUser.next()) {
+					borrowedDocs = new ArrayList<>();
+					borrowedDocs.add(resUser.getInt("id"));
+					user = new User(resUser.getString("login"), false, borrowedDocs);
+				}
+
+				while (resUser.next()) {
+					borrowedDocs.add(resUser.getInt("id"));
+				}
+
+				doc = factory.getDocument(resDoc.getString("name"),
+						Type.valueOf(resDoc.getString("type").toUpperCase()), resDoc.getInt("id"),
+						user);
+
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -116,29 +155,38 @@ public class MediathequeData implements PersistentMediatheque {
 
 	@Override
 	public void nouveauDocument(int type, Object... args) {
-		String newDocQuery = "insert into public.document(id,name,type,subscriber) values (nextval('document_seq'),?,?,null)";
-		System.out.println(args[0].toString());
-		try {
-			PreparedStatement preparedStatementDoc = connection.prepareStatement(newDocQuery);
-			preparedStatementDoc.setString(1,args[0].toString());
-			switch (type) {
-				case 1:
-					preparedStatementDoc.setString(2,"dvd");
-					break;
+		String newDocQuery;
+        ADocument document = (ADocument) args[0];
+        PreparedStatement preparedStatementDoc = null;
 
-				case 2:
-					preparedStatementDoc.setString(2,"cd");
-					break;
 
-				case 3:
-					preparedStatementDoc.setString(2,"livre");
-					break;
+            try {
+
+                if (type == -1) {
+                    newDocQuery = "insert into public.document(id,name,type,subscriber) values (nextval('document_seq'),?,?,null)";
+					preparedStatementDoc = connection.prepareStatement(newDocQuery);
+					preparedStatementDoc.setString(1, document.getName());
+                    preparedStatementDoc.setString(2, document.getType().toString());
+                }
+                else {
+                    newDocQuery = "update public.document set name=?, type=?, subscriber=?";
+					preparedStatementDoc = connection.prepareStatement(newDocQuery);
+//                    System.out.println(document.getName() + document.getType().toString());
+                    preparedStatementDoc.setString(1, document.getName());
+                    preparedStatementDoc.setString(2, document.getType().toString());
+                    String[] user = document.getUser().toString().split(", ");
+                    preparedStatementDoc.setString(3, user[user.length - 1]);
+                }
 			}
-			preparedStatementDoc.executeUpdate();
+            catch (SQLException ex) {
+                ex.printStackTrace();
 
-		}
-		catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
+        }
+        System.out.println(args[0].toString());
+        try {
+            preparedStatementDoc.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

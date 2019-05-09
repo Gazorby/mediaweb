@@ -15,16 +15,24 @@
 <body>
     <section>
         <h3><%=session.getAttribute("welcome")%></h3>
-        
-        
-        <button href="emprunter">Emprunter</button>
+
+        <form action="emprunter" method="post">
+            <select name="id">
+                <% List<Document> docsAvailable = (List<Document>) request.getAttribute("docsAvailable"); %>
+                <%for (Document doc : docsAvailable) {%>
+                    <option value="<%=doc.affiche()[2]%>"><%=doc.affiche()[0]%></option>
+                <%}%>
+            </select>
+            <input type="submit" value="Emprunter"/>
+        </form>
+
 
 
     </section>
 
     <section>
         <h3>Vos documents emprunt&eacutes</h3>
-        <% List<Document> docs = (List<Document>) request.getAttribute("docs"); %>
+        <% List<Document> docs = (List<Document>) request.getAttribute("docsEmpruntes"); %>
 
          <form action = "retourner" method = "post">
          <%for (Document doc : docs) {%>
